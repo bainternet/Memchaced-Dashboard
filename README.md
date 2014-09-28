@@ -49,7 +49,7 @@ License
 
 MIT
 
-This Script uses the following resurces:
+This Script uses the following resources:
 * DataTables - is free open source software, available under the [MIT license](http://www.datatables.net/license/mit).
 * Twitter Bootstrap  licensed under [Apache License v2.0](http://www.apache.org/licenses/LICENSE-2.0).
 * morris.js licensed under [Simplified BSD License](http://morrisjs.github.io/morris.js/index.html).
