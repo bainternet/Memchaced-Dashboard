@@ -3,7 +3,7 @@
 /**
 * Simple memchached dashboard
 * A dead simple single file Memchaced stats dashboard.
-* @version 0.1
+* @version 0.1.1
 * @author Ohad Raz <admin@bainternet.info>
 */
 class Simple_memchached_dashboard{
@@ -434,7 +434,10 @@ class Simple_memchached_dashboard{
 				echo "<tr><td>Cumulative number of retrieval requests </td><td>".$status ["cmd_get"]."</td></tr>"; 
 				echo "<tr><td> Cumulative number of storage requests </td><td>".$status ["cmd_set"]."</td></tr>"; 
 
-				$percCacheHit=((real)$status ["get_hits"]/ (real)$status ["cmd_get"] *100); 
+				if ((real)$status ["cmd_get"] != 0)
+					$percCacheHit=((real)$status ["get_hits"]/ (real)$status ["cmd_get"] *100);
+				else
+					$percCacheHit=0;
 				$percCacheHit=round($percCacheHit,3); 
 				$percCacheMiss=100-$percCacheHit; 
 

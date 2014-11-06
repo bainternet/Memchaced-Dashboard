@@ -7,7 +7,7 @@ All assets (CSS ans JavaScript) are loaded from CDN's.
 Version
 ----
 
-0.1
+0.1.1
 
 
 ##ScreenShots
