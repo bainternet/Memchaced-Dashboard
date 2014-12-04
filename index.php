@@ -587,4 +587,4 @@ class Simple_memchached_dashboard{
 		<?php
 	}
 }//end class
-new Simple_memchached_dashboard($servers, $users);
+new Simple_memchached_dashboard();
