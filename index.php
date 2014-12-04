@@ -1,5 +1,4 @@
 <?php
-
 /**
 * Simple memchached dashboard
 * A dead simple single file Memchaced stats dashboard.
@@ -15,12 +14,23 @@ class Simple_memchached_dashboard{
 	private $users   = array();
 	
 	
-	function __construct(array $servers = null,$users  = array('admin' => 'admin')){
+	function __construct($servers = null,$users  = array('admin' => 'admin')){
 		session_start();
 		$this->users = $users;
 		$this->validate_login();
 		$this->need_login();
-		$this->servers = empty($servers) ? array(array('127.0.0.1', 11211)) : $servers;
+		if (is_string($servers)){
+			if ($servers == 'localhost') $this->servers = array(array('127.0.0.1', 11211));
+			elseif ($servers == 'session.save_path'){
+				$this->servers = explode(',',ini_get('session.save_path'));
+				foreach($this->servers as &$server){
+					$server = explode(':', $server);
+					if (isset($server[1])) $server[1] = (int) $server[1];
+				}
+			}
+		}
+		else 
+			$this->servers = empty($servers) ? array(array('127.0.0.1', 11211)) : $servers;
 		$this->setup();
 		$this->dashboard();
 	}
@@ -124,7 +134,7 @@ class Simple_memchached_dashboard{
 	function setup(){
 		$this->memcache = new Memcache();
 		foreach($this->servers as $server){
-			$this->memcache->addServer($server[0], (isset($server[1]) ? $server[1] : 11211));
+			$this->memcache->addServer($server[0], (isset($server[1]) ? $server[1] : 11211), false, 50);
 		}
 		$list = array();
 		$allSlabs = $this->memcache->getExtendedStats('slabs');
