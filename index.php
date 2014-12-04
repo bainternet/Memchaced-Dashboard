@@ -11,18 +11,16 @@ class Simple_memchached_dashboard{
 	public $list     = null;
 	public $status   = null;
 	public $error    = false;
-	public $server   = '';
-	public $port     = '';
+	public $servers  = array();
 	private $users   = array();
 	
 	
-	function __construct($server = '127.0.0.1',$port = '11211',$users  = array('admin' => 'admin')){
+	function __construct(array $servers = null,$users  = array('admin' => 'admin')){
 		session_start();
 		$this->users = $users;
 		$this->validate_login();
 		$this->need_login();
-		$this->server = $server;
-		$this->port = $port;
+		$this->servers = empty($servers) ? array(array('127.0.0.1', 11211)) : $servers;
 		$this->setup();
 		$this->dashboard();
 	}
@@ -125,7 +123,9 @@ class Simple_memchached_dashboard{
 
 	function setup(){
 		$this->memcache = new Memcache();
-		$this->memcache->addServer("$this->server:$this->port");
+		foreach($this->servers as $server){
+			$this->memcache->addServer($server[0], (isset($server[1]) ? $server[1] : 11211));
+		}
 		$list = array();
 		$allSlabs = $this->memcache->getExtendedStats('slabs');
 		$items = $this->memcache->getExtendedStats('items');
@@ -495,8 +495,14 @@ class Simple_memchached_dashboard{
 					<a class="navbar-brand" href="<?= $_SERVER['PHP_SELF'] ?>">Memcached Dashboard</a>
 				</div>
 			<?php 
-			if ($this->server != ''){	
-				?><p class="navbar-text">Server IP: <?= $this->server ?> Port: <?= $this->port ?></p><?php
+			if (!empty($this->servers)){	
+				?><p class="navbar-text">Servers: <?
+					$serversList = array();
+					foreach($this->servers as $serverArray){
+						$serversList[] = implode(':', $serverArray);
+					}
+					echo implode(', ', $serversList); 
+				?></p><?php
 			}
 			if ($this->is_logged_in()){
 				?>
@@ -581,4 +587,4 @@ class Simple_memchached_dashboard{
 		<?php
 	}
 }//end class
-new Simple_memchached_dashboard();
+new Simple_memchached_dashboard($servers, $users);
