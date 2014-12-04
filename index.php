@@ -88,7 +88,7 @@ class Simple_memchached_dashboard{
     }
 
     function is_logged_in(){
-		return (isset($_SESSION['username']) && isset($this->users[$_SESSION['username']]) && $_SESSION['username'] != '');
+		return (isset($_SESSION['memcached_dashboard_username']) && isset($this->users[$_SESSION['memcached_dashboard_username']]) && $_SESSION['memcached_dashboard_username'] != '');
 	}
 
 	function add_user($user_name,$user_pass){
@@ -97,7 +97,7 @@ class Simple_memchached_dashboard{
 
 	function logout(){
 		if(isset($_GET['action']) && $_GET['action'] == 'logout') {
-			unset($_SESSION['username']);
+			unset($_SESSION['memcached_dashboard_username']);
 			session_write_close();
 			header('Location:  ' . $_SERVER['PHP_SELF']);
 		}
@@ -110,7 +110,7 @@ class Simple_memchached_dashboard{
 			$pass = $_POST['password'];
 			if ($this->user_exists($user)){
 				if($pass == $this->get_user_pass($user)) {
-					$_SESSION['username'] = $_POST['username'];
+					$_SESSION['memcached_dashboard_username'] = $_POST['username'];
 				}else {
 					$this->error = 'Wrong Password!';
 				}
