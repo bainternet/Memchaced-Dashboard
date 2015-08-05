@@ -37,7 +37,7 @@ Change server IP, Port or Default user
 
 ```PHP
 $ip = '192.23.23.23'; //set your ip address def: 127.0.0.1
-$port = '11311'; //set your porrt def: 112211
+$port = '11311'; //set your port def: 11211
 $users = array(
     'admin' => 'some_hard_to_crack_pass@$%^',
     'another_user' => 'another_pass'
@@ -55,4 +55,3 @@ This Script uses the following resources:
 * morris.js licensed under [Simplified BSD License](http://morrisjs.github.io/morris.js/index.html).
 * alertify.js is licensed under [MIT](http://www.opensource.org/licenses/MIT).
 * jQuery  is licensed [MIT license](http://en.wikipedia.org/wiki/MIT_License).
-
