@@ -1,5 +1,4 @@
 <?php
-
 /**
 * Simple memchached dashboard
 * A dead simple single file Memchaced stats dashboard.
@@ -11,18 +10,27 @@ class Simple_memchached_dashboard{
 	public $list     = null;
 	public $status   = null;
 	public $error    = false;
-	public $server   = '';
-	public $port     = '';
+	public $servers  = array();
 	private $users   = array();
 	
 	
-	function __construct($server = '127.0.0.1',$port = '11211',$users  = array('admin' => 'admin')){
+	function __construct($servers = null,$users  = array('admin' => 'admin')){
 		session_start();
 		$this->users = $users;
 		$this->validate_login();
 		$this->need_login();
-		$this->server = $server;
-		$this->port = $port;
+		if (is_string($servers)){
+			if ($servers == 'localhost') $this->servers = array(array('127.0.0.1', 11211));
+			elseif ($servers == 'session.save_path'){
+				$this->servers = explode(',',ini_get('session.save_path'));
+				foreach($this->servers as &$server){
+					$server = explode(':', $server);
+					if (isset($server[1])) $server[1] = (int) $server[1];
+				}
+			}
+		}
+		else 
+			$this->servers = empty($servers) ? array(array('127.0.0.1', 11211)) : $servers;
 		$this->setup();
 		$this->dashboard();
 	}
@@ -80,7 +88,7 @@ class Simple_memchached_dashboard{
     }
 
     function is_logged_in(){
-		return (isset($_SESSION['username']) && $_SESSION['username'] != '');
+		return (isset($_SESSION['memcached_dashboard_username']) && isset($this->users[$_SESSION['memcached_dashboard_username']]) && $_SESSION['memcached_dashboard_username'] != '');
 	}
 
 	function add_user($user_name,$user_pass){
@@ -89,8 +97,8 @@ class Simple_memchached_dashboard{
 
 	function logout(){
 		if(isset($_GET['action']) && $_GET['action'] == 'logout') {
-			$_SESSION['username'] = '';
-			session_destroy();
+			unset($_SESSION['memcached_dashboard_username']);
+			session_write_close();
 			header('Location:  ' . $_SERVER['PHP_SELF']);
 		}
 	}
@@ -102,7 +110,7 @@ class Simple_memchached_dashboard{
 			$pass = $_POST['password'];
 			if ($this->user_exists($user)){
 				if($pass == $this->get_user_pass($user)) {
-					$_SESSION['username'] = $_POST['username'];
+					$_SESSION['memcached_dashboard_username'] = $_POST['username'];
 				}else {
 					$this->error = 'Wrong Password!';
 				}
@@ -125,7 +133,9 @@ class Simple_memchached_dashboard{
 
 	function setup(){
 		$this->memcache = new Memcache();
-		$this->memcache->addServer("$this->server:$this->port");
+		foreach($this->servers as $server){
+			$this->memcache->addServer($server[0], (isset($server[1]) ? $server[1] : 11211), false, 50);
+		}
 		$list = array();
 		$allSlabs = $this->memcache->getExtendedStats('slabs');
 		$items = $this->memcache->getExtendedStats('items');
@@ -495,8 +505,14 @@ class Simple_memchached_dashboard{
 					<a class="navbar-brand" href="<?= $_SERVER['PHP_SELF'] ?>">Memcached Dashboard</a>
 				</div>
 			<?php 
-			if ($this->server != ''){	
-				?><p class="navbar-text">Server IP: <?= $this->server ?> Port: <?= $this->port ?></p><?php
+			if (!empty($this->servers)){	
+				?><p class="navbar-text">Servers: <?
+					$serversList = array();
+					foreach($this->servers as $serverArray){
+						$serversList[] = implode(':', $serverArray);
+					}
+					echo implode(', ', $serversList); 
+				?></p><?php
 			}
 			if ($this->is_logged_in()){
 				?>
