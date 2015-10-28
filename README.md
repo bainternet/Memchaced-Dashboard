@@ -1,7 +1,7 @@
 Memchaced Dashboard
 ===================
 
-A dead simple single file Memchaced stats dashboard in PHP. The dashboard shows a few basic stats on the configured server and allows to delete/set keys and flush all data.
+A dead simple single file Memcached stats dashboard in PHP. The dashboard shows a few basic stats on the configured server and allows to delete/set keys and flush all data.
 All assets (CSS ans JavaScript) are loaded from CDN's.
 
 Version
@@ -37,7 +37,7 @@ Change server IP, Port or Default user
 
 ```PHP
 $ip = '192.23.23.23'; //set your ip address def: 127.0.0.1
-$port = '11311'; //set your porrt def: 112211
+$port = '11311'; //set your port def: 112211
 $users = array(
     'admin' => 'some_hard_to_crack_pass@$%^',
     'another_user' => 'another_pass'
