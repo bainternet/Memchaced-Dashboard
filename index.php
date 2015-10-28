@@ -276,10 +276,10 @@ class Simple_memchached_dashboard{
 
 	function print_memory_widget(){
 		$status  = $this->status;
-		$MBSize  = number_format((real) $status["limit_maxbytes"]/(1024*1024),3);
-		$MBSizeU = number_format((real) $status["bytes"]/(1024*1024),3);
-		$MBRead  = number_format((real)$status["bytes_read"]/(1024*1024),3);
-		$MBWrite = number_format((real) $status["bytes_written"]/(1024*1024),3);
+		$MBSize  = (real) $status["limit_maxbytes"]/(1024*1024) ;
+		$MBSizeU = number_format((real) $status["bytes"]/(1024*1024),4);
+		$MBRead  = number_format((real)$status["bytes_read"]/(1024*1024),4);
+		$MBWrite = number_format((real) $status["bytes_written"]/(1024*1024),4);
 		?>
 		<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
 			<div class="panel panel-default">
