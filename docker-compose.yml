@@ -1,0 +1,25 @@
+version: '2'
+
+services:
+
+  memcached-dashboard:
+    image: memcached-dashboard
+    build: .
+    environment:
+      - MEMCACHED_HOST=memcached-01
+      - MEMCACHED_PORT=11211
+      - ADMIN_USER=${ADMIN_USER:-admin}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD:-admin}
+    ports:
+      - ${DASHBOARD_PORT:-8080}:80
+    restart: unless-stopped
+    links:
+      - memcached-01
+    depends_on:
+      - memcached-01
+
+  memcached-01:
+    image: memcached
+    restart: unless-stopped
+    ports:
+     - 11211:11211

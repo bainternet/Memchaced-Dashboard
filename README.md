@@ -44,6 +44,18 @@ $users = array(
 );
 new Simple_memchached_dashboard($ip,$port,$users);
 ```
+Usage in docker
+------
+
+```sh
+docker-compose up -d
+```
+### Environment Variables
+
+- ADMIN_USER: Default username for login.
+- ADMIN_PASSWORD: Default password for login.
+- DASHBOARD_PORT: Default port to start apache.
+
 License
 ----
 

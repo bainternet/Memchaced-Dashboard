@@ -581,4 +581,18 @@ class Simple_memchached_dashboard{
 		<?php
 	}
 }//end class
-new Simple_memchached_dashboard();
+
+$host = getenv('MEMCACHED_HOST');
+$port = getenv('MEMCACHED_PORT');
+$user = getenv('ADMIN_USER');
+$password = getenv('ADMIN_PASSWORD');
+
+if ($host || $port || $user || $password) {
+	new Simple_memchached_dashboard(
+		$host ?: 'memcached', 
+		$port ?: 11211, [
+			$user ?: 'admin' => $password ?: 'admin',
+		]);
+} else {
+	new Simple_memchached_dashboard();
+}
