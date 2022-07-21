@@ -1,5 +1,7 @@
 FROM alpine:3.14
 
+ENV MEMCACHED_PORT=11211
+
 RUN apk --update add php7-apache2 php7-pecl-memcache php7-cli php7-json php7-curl php7-openssl php7-mbstring php7-sockets php7-xml php7-zlib git
 
 RUN rm -rf /var/www/localhost/htdocs \
