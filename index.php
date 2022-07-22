@@ -14,9 +14,8 @@ class Simple_memchached_dashboard{
 	public $server   = '';
 	public $port     = '';
 	private $users   = array();
-	
-	
-	function __construct($server = '127.0.0.1',$port = '11211',$users  = array('admin' => 'admin')){
+
+	function __construct($server = '127.0.0.1', $port = '11211', $users = array('admin' => 'admin')){
 		session_start();
 		$this->users = $users;
 		$this->validate_login();
@@ -52,8 +51,8 @@ class Simple_memchached_dashboard{
 									<!-- Username -->
 									<label class="col-md-3 control-label"  for="username">Username</label>
 									<div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
-										<input type="text" id="username" name="username" placeholder="" class="input-xlarge">	
-									</div>								
+										<input type="text" id="username" name="username" placeholder="" class="input-xlarge">
+									</div>
 								</div>
 
 								<div class="form-group">
@@ -125,7 +124,7 @@ class Simple_memchached_dashboard{
 
 	function setup(){
 		$this->memcache = new Memcache();
-		$this->memcache->addServer("$this->server:$this->port");
+		$this->memcache->connect($this->server, $this->port);
 		$list = array();
 		$allSlabs = $this->memcache->getExtendedStats('slabs');
 		$items = $this->memcache->getExtendedStats('items');
@@ -181,7 +180,7 @@ class Simple_memchached_dashboard{
 		if (!is_string($value)){
 			return false;
 		}
-	 
+
 		// Serialized false, return true. unserialize() returns false on an
 		// invalid string or it could return false if the string is serialized
 		// false, eliminate that possibility.
@@ -189,10 +188,10 @@ class Simple_memchached_dashboard{
 			$result = false;
 			return true;
 		}
-	 
+
 		$length	= strlen($value);
 		$end	= '';
-	 	
+
 	 	if (!isset($value[0])) return false;
 		switch ($value[0]){
 			case 's':
@@ -210,7 +209,7 @@ class Simple_memchached_dashboard{
 	 			if ($value[1] !== ':'){
 					return false;
 				}
-	 
+
 				switch ($value[2]){
 					case 0:
 					case 1:
@@ -223,7 +222,7 @@ class Simple_memchached_dashboard{
 					case 8:
 					case 9:
 					break;
-	 
+
 					default:
 						return false;
 				}
@@ -233,11 +232,11 @@ class Simple_memchached_dashboard{
 					return false;
 				}
 			break;
-	 
+
 			default:
 				return false;
 		}
-	 
+
 		if (($result = @unserialize($value)) === false){
 			$result = null;
 			return false;
@@ -247,6 +246,7 @@ class Simple_memchached_dashboard{
 
 	function print_hit_miss_widget(){
 		$status = $this->status;
+
 		?>
 		<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
 			<div class="panel panel-default">
@@ -257,14 +257,14 @@ class Simple_memchached_dashboard{
 					<div id="hit_miss_cart" style="height: 250px;"></div>
 				</div>
 			</div>
-			
+
 			<script type="text/javascript">
 			jQuery(document).ready(function(){
 				Morris.Donut({
 					element: 'hit_miss_cart',
 					data: [
-						{label: "Hit", value: <?= $status["get_hits"] ?>},
-						{label: "Miss", value: <?= $status["get_misses"] ?>},
+						{label: "Hit", value: <?= (int)$status["get_hits"] ?> },
+						{label: "Miss", value: <?= (int)$status["get_misses"] ?> },
 					],
 					colors: ['#5cb85c','#d9534f']
 				});
@@ -405,7 +405,7 @@ class Simple_memchached_dashboard{
 		?>
 		<a name="charts">&nbsp;</a>
 		<div class="row top20">
-			<?php 
+			<?php
 			$this->print_hit_miss_widget();
 			$this->print_memory_widget();
 			?>
@@ -413,7 +413,7 @@ class Simple_memchached_dashboard{
 		<?php
 	}
 
-	function print_server_info(){ 
+	function print_server_info(){
 		$status = $this->status;
 		?>
 		<a name="info"></a>
@@ -423,39 +423,39 @@ class Simple_memchached_dashboard{
 			</div>
 			<div class="panel-body">
 			<?php
-				echo "<table class='table'>"; 
-				echo "<tr><td>Memcache Server version:</td><td> ".$status ["version"]."</td></tr>"; 
-				echo "<tr><td>Process id of this server process </td><td>".$status ["pid"]."</td></tr>"; 
-				echo "<tr><td>Server Uptime </td><td>".gmdate("H:i:s", $status["uptime"])."</td></tr>"; 
-				echo "<tr><td>Total number of items stored by this server ever since it started </td><td>".$status ["total_items"]."</td></tr>"; 
-				echo "<tr><td>Number of open connections </td><td>".$status ["curr_connections"]."</td></tr>"; 
-				echo "<tr><td>Total number of connections opened since the server started running </td><td>".$status ["total_connections"]."</td></tr>"; 
-				echo "<tr><td>Number of connection structures allocated by the server </td><td>".$status ["connection_structures"]."</td></tr>"; 
-				echo "<tr><td>Cumulative number of retrieval requests </td><td>".$status ["cmd_get"]."</td></tr>"; 
-				echo "<tr><td> Cumulative number of storage requests </td><td>".$status ["cmd_set"]."</td></tr>"; 
+				echo "<table class='table'>";
+				echo "<tr><td>Memcache Server version:</td><td> ".$status ["version"]."</td></tr>";
+				echo "<tr><td>Process id of this server process </td><td>".$status ["pid"]."</td></tr>";
+				echo "<tr><td>Server Uptime </td><td>".gmdate("H:i:s", $status["uptime"])."</td></tr>";
+				echo "<tr><td>Total number of items stored by this server ever since it started </td><td>".$status ["total_items"]."</td></tr>";
+				echo "<tr><td>Number of open connections </td><td>".$status ["curr_connections"]."</td></tr>";
+				echo "<tr><td>Total number of connections opened since the server started running </td><td>".$status ["total_connections"]."</td></tr>";
+				echo "<tr><td>Number of connection structures allocated by the server </td><td>".$status ["connection_structures"]."</td></tr>";
+				echo "<tr><td>Cumulative number of retrieval requests </td><td>".$status ["cmd_get"]."</td></tr>";
+				echo "<tr><td> Cumulative number of storage requests </td><td>".$status ["cmd_set"]."</td></tr>";
 
 				if ((real)$status ["cmd_get"] != 0)
 					$percCacheHit=((real)$status ["get_hits"]/ (real)$status ["cmd_get"] *100);
 				else
 					$percCacheHit=0;
-				$percCacheHit=round($percCacheHit,3); 
-				$percCacheMiss=100-$percCacheHit; 
+				$percCacheHit=round($percCacheHit,3);
+				$percCacheMiss=100-$percCacheHit;
 
-				echo "<tr><td>Number of keys that have been requested and found present </td><td>".$status ["get_hits"]." ($percCacheHit%)</td></tr>"; 
-				echo "<tr><td>Number of items that have been requested and not found </td><td>".$status ["get_misses"]."($percCacheMiss%)</td></tr>"; 
+				echo "<tr><td>Number of keys that have been requested and found present </td><td>".$status ["get_hits"]." ($percCacheHit%)</td></tr>";
+				echo "<tr><td>Number of items that have been requested and not found </td><td>".$status ["get_misses"]."($percCacheMiss%)</td></tr>";
 
-				$MBRead= (real)$status["bytes_read"]/(1024*1024); 
-				echo "<tr><td>Total number of bytes read by this server from network </td><td>".$MBRead." Mega Bytes</td></tr>"; 
-				$MBWrite=(real) $status["bytes_written"]/(1024*1024) ; 
+				$MBRead= (real)$status["bytes_read"]/(1024*1024);
+				echo "<tr><td>Total number of bytes read by this server from network </td><td>".$MBRead." Mega Bytes</td></tr>";
+				$MBWrite=(real) $status["bytes_written"]/(1024*1024) ;
 				echo "<tr><td>Total number of bytes sent by this server to network </td><td>".$MBWrite." Mega Bytes</td></tr>";
-				$MBSize=(real) $status["limit_maxbytes"]/(1024*1024) ; 
-				echo "<tr><td>Current number of bytes used.</td><td>".$status['bytes']."</td></tr>"; 
-				echo "<tr><td>Number of bytes this server is allowed to use for storage.</td><td>".$MBSize." Mega Bytes</td></tr>"; 
-				echo "<tr><td>Number of valid items removed from cache to free memory for new items.</td><td>".$status ["evictions"]."</td></tr>"; 
+				$MBSize=(real) $status["limit_maxbytes"]/(1024*1024) ;
+				echo "<tr><td>Current number of bytes used.</td><td>".$status['bytes']."</td></tr>";
+				echo "<tr><td>Number of bytes this server is allowed to use for storage.</td><td>".$MBSize." Mega Bytes</td></tr>";
+				echo "<tr><td>Number of valid items removed from cache to free memory for new items.</td><td>".$status ["evictions"]."</td></tr>";
 				echo "</table>";
 			?>
 			</div>
-		</div>	
+		</div>
 		<?php
 	}
 
@@ -467,7 +467,7 @@ class Simple_memchached_dashboard{
 			<meta http-equiv="X-UA-Compatible" content="IE=edge">
 			<meta name="viewport" content="width=device-width, initial-scale=1">
 			<link href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
-			<link rel="stylesheet" href="http://cdn.oesmith.co.uk/morris-0.5.1.css">
+			<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.css">
 			<link rel="stylesheet" href="//cdn.datatables.net/plug-ins/a5734b29083/integration/bootstrap/3/dataTables.bootstrap.css">
 			<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/alertify.js/0.3.11/alertify.core.min.css">
 			<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/alertify.js/0.3.11/alertify.default.min.css">
@@ -494,8 +494,8 @@ class Simple_memchached_dashboard{
 					</button>
 					<a class="navbar-brand" href="<?= $_SERVER['PHP_SELF'] ?>">Memcached Dashboard</a>
 				</div>
-			<?php 
-			if ($this->server != ''){	
+			<?php
+			if ($this->server != ''){
 				?><p class="navbar-text">Server IP: <?= $this->server ?> Port: <?= $this->port ?></p><?php
 			}
 			if ($this->is_logged_in()){
@@ -516,7 +516,7 @@ class Simple_memchached_dashboard{
 					</ul>
 				</div><!-- /.navbar-collapse -->
 				<?php
-			}?>    
+			}?>
 		  </div><!-- /.container-fluid -->
 		</nav>
 		<div class="container top20">
@@ -526,7 +526,7 @@ class Simple_memchached_dashboard{
 	function footer(){
 		?>
 		<script src="//cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script>
-		<script src="http://cdn.oesmith.co.uk/morris-0.5.1.min.js"></script>
+		<script src="//cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.min.js"></script>
 		<script type="text/javascript" src="//cdn.datatables.net/1.10.2/js/jquery.dataTables.min.js"></script>
 		<script type="text/javascript" src="//cdn.datatables.net/plug-ins/a5734b29083/integration/bootstrap/3/dataTables.bootstrap.js"></script>
 		<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.2.0/js/bootstrap.min.js"></script>
@@ -581,4 +581,18 @@ class Simple_memchached_dashboard{
 		<?php
 	}
 }//end class
-new Simple_memchached_dashboard();
+
+$host = getenv('MEMCACHED_HOST');
+$port = getenv('MEMCACHED_PORT');
+$user = getenv('ADMIN_USER');
+$password = getenv('ADMIN_PASSWORD');
+
+if ($host || $port || $user || $password) {
+	new Simple_memchached_dashboard(
+		$host ?: 'memcached', 
+		$port ?: 11211, [
+			$user ?: 'admin' => $password ?: 'admin',
+		]);
+} else {
+	new Simple_memchached_dashboard();
+}
